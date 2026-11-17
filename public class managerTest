@@ -1,0 +1,153 @@
+package POE3;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class ManagerTest {
+
+    private ByteArrayOutputStream output;
+
+    @BeforeEach
+    public void setUp() {
+        output = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(output));
+    }
+
+    @Test
+    public void testAddMessage() {
+
+        Manager.addMessage(
+                "TestSender",
+                "1234567890",
+                "+27821234567",
+                "Hello there",
+                "12:1:HELLOTHERE"
+        );
+
+        Manager.displayFullReport();
+
+        assertTrue(output.toString().contains("TestSender"));
+        assertTrue(output.toString().contains("Hello there"));
+    }
+
+    @Test
+    public void testDisplaySendersAndRecipients() {
+
+        Manager.addMessage(
+                "SenderOne",
+                "1111111111",
+                "+27821234567",
+                "Testing message",
+                "11:1:TESTINGMESSAGE"
+        );
+
+        Manager.displaySendersAndRecipients();
+
+        assertTrue(output.toString().contains(
+                "Senders and Recipients:"
+        ));
+
+        assertTrue(output.toString().contains("SenderOne"));
+    }
+
+    @Test
+    public void testDisplayLongestMessage() {
+
+        Manager.addMessage(
+                "SenderTwo",
+                "2222222222",
+                "+27821234567",
+                "This is a longer message",
+                "22:2:THISMESSAGE"
+        );
+
+        Manager.displayLongestMessage();
+
+        assertTrue(output.toString().contains(
+                "Longest Message:"
+        ));
+    }
+
+    @Test
+    public void testSearchByMessageId() {
+
+        Manager.addMessage(
+                "SenderThree",
+                "3333333333",
+                "+27821234567",
+                "Find this message",
+                "33:3:FINDMESSAGE"
+        );
+
+        Manager.searchByMessageId("3333333333");
+
+        assertTrue(output.toString().contains(
+                "Find this message"
+        ));
+    }
+
+    @Test
+    public void testSearchMessagesByRecipient() {
+
+        Manager.addMessage(
+                "SenderFour",
+                "4444444444",
+                "+27821234567",
+                "Recipient test",
+                "44:4:RECIPIENTTEST"
+        );
+
+        Manager.searchMessagesByRecipient("+27821234567");
+
+        assertTrue(output.toString().contains(
+                "Recipient test"
+        ));
+    }
+
+    @Test
+    public void testDeleteMessageByHash() {
+
+        Manager.addMessage(
+                "SenderFive",
+                "5555555555",
+                "+27821234567",
+                "Delete this message",
+                "55:5:DELETEMESSAGE"
+        );
+
+        Manager.deleteMessageByHash("55:5:DELETEMESSAGE");
+
+        output.reset();
+
+        Manager.searchByMessageId("5555555555");
+
+        assertTrue(output.toString().contains(
+                "Message ID not found."
+        ));
+    }
+
+    @Test
+    public void testDisplayFullReport() {
+
+        Manager.addMessage(
+                "SenderSix",
+                "6666666666",
+                "+27821234567",
+                "Report test",
+                "66:6:REPORTTEST"
+        );
+
+        Manager.displayFullReport();
+
+        assertTrue(output.toString().contains(
+                "Full Message Report:"
+        ));
+
+        assertTrue(output.toString().contains("Report test"));
+    }
+}
