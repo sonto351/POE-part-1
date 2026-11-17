@@ -1,0 +1,117 @@
+package POE3;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class funchatTest {
+
+    private final InputStream originalIn = System.in;
+    private final PrintStream originalOut = System.out;
+
+    @AfterEach
+    public void restoreSystem() {
+        System.setIn(originalIn);
+        System.setOut(originalOut);
+    }
+
+    @Test
+    public void testSendMessage() {
+
+        String input = "2\n"
+                + "+27821234567\n"
+                + "Hello there\n"
+                + "1\n"
+                + "3\n";
+
+        ByteArrayInputStream testInput =
+                new ByteArrayInputStream(input.getBytes());
+
+        ByteArrayOutputStream output =
+                new ByteArrayOutputStream();
+
+        System.setIn(testInput);
+        System.setOut(new PrintStream(output));
+
+        Quickchat.startChat("TestSender");
+
+        assertTrue(output.toString().contains(
+                "Message sent and stored in system."
+        ));
+    }
+
+    @Test
+    public void testDiscardMessage() {
+
+        String input = "2\n"
+                + "+27821234567\n"
+                + "Test message\n"
+                + "2\n"
+                + "3\n";
+
+        ByteArrayInputStream testInput =
+                new ByteArrayInputStream(input.getBytes());
+
+        ByteArrayOutputStream output =
+                new ByteArrayOutputStream();
+
+        System.setIn(testInput);
+        System.setOut(new PrintStream(output));
+
+        Quickchat.startChat("TestSender");
+
+        assertTrue(output.toString().contains(
+                "Message discarded"
+        ));
+    }
+
+    @Test
+    public void testQuitChat() {
+
+        String input = "3\n";
+
+        ByteArrayInputStream testInput =
+                new ByteArrayInputStream(input.getBytes());
+
+        ByteArrayOutputStream output =
+                new ByteArrayOutputStream();
+
+        System.setIn(testInput);
+        System.setOut(new PrintStream(output));
+
+        Quickchat.startChat("TestSender");
+
+        assertTrue(output.toString().contains(
+                "Quitting... Goodbye!"
+        ));
+    }
+
+    @Test
+    public void testInvalidRecipient() {
+
+        String input = "2\n"
+                + "123456789\n"
+                + "+27821234567\n"
+                + "Valid message\n"
+                + "2\n"
+                + "3\n";
+
+        ByteArrayOutputStream output =
+                new ByteArrayOutputStream();
+
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        System.setOut(new PrintStream(output));
+
+        Quickchat.startChat("TestSender");
+
+        assertTrue(output.toString().contains(
+                "Message discarded"
+        ));
+    }
+}
